@@ -9,13 +9,17 @@ jobs:
         with:
           distribution: temurin
           java-version: 17
+      - uses: gradle/actions/setup-gradle@v4
+        with:
+          gradle-version: 7.6.4
       - name: Décompresser et compiler
         run: |
           mkdir proj
           unzip -q *.zip -d proj
-          cd "$(dirname "$(find proj -name gradlew | head -n 1)")"
-          chmod +x gradlew
-          ./gradlew build
+          find proj -maxdepth 3 | head -n 60
+          DIR="$(dirname "$(find proj -name build.gradle | head -n 1)")"
+          cd "$DIR"
+          if [ -f gradlew ]; then chmod +x gradlew && ./gradlew build; else gradle build; fi
       - uses: actions/upload-artifact@v4
         with:
           name: mod-jar
